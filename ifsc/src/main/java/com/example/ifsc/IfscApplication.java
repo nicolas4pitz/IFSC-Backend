@@ -25,18 +25,21 @@ public class IfscApplication {
 
     public String validador(String cpf){
         
-        if (cpf.length() > 11){
-            return "BAD REQUEST (400) TRESTE";
+        if (cpf.length() != 11){
+            return "BAD REQUEST (400)";
         }
 
-        
+        if (!cpf.matches("\\d+")) {
+            return "BAD REQUEST (400)";
+        }
+
         int resultOne = calc(10, cpf);
         if (resultOne == 10) {
             resultOne = 0;
         }
 
-        if (resultOne != cpf.indexOf(9)) {
-            return "BAD REQUEST (400) PIIPIP" + cpf;
+        if (resultOne != Character.getNumericValue(cpf.charAt(9))) {
+            return "BAD REQUEST (400)";
         }
 
         int resultTwo = calc(11, cpf);
@@ -44,8 +47,8 @@ public class IfscApplication {
             resultTwo = 0;
         }
 
-        if (resultTwo != cpf.indexOf(10)) {
-            return "BAD REQUEST (400) PUUPUP";
+        if (resultTwo != Character.getNumericValue(cpf.charAt(10))) {
+            return "BAD REQUEST (400)";
         }
 
         return "OK (200)";
@@ -53,14 +56,15 @@ public class IfscApplication {
 
     public int calc(int num, String cpf){
         int sum = 0;
-        int inter;
-        int c = 0;
-        char tt = cpf.charAt(9);
-        for (int i = num; i > 2; i--) {
-            inter = i * cpf.charAt(c);
-            sum += inter;
+        int count = num - 1;
+        
+        for (int i = 0; i < count; i++) {
+            int digit = Character.getNumericValue(cpf.charAt(i));
+            sum += digit * (num - i);
         }
-        return sum;
+        
+        int remainder = sum % 11;
+        return remainder;
     }
 
 
