@@ -37,9 +37,7 @@ app.get("/agora", (req, res) => {
     
     const data = new Date();
     const dataForma = format(data, "dd/MM/yyyy")
-
-    const hor = new Date();
-    const horario = format(hor, "hh:MM:SS")
+    const horario = format(data, "hh:MM:SS")
 
     const resposta = {
         "horario": horario,
