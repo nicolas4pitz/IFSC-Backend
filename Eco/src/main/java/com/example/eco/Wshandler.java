@@ -18,24 +18,23 @@ public class Wshandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
-        // Cria a mensagem de resposta, que contém o texto recebido por meio deste websocke
-            Thread.ofVirtual().start(() -> {
-                try {
-                    for (int j = 0; j < clientes.size(); j++) {
-                        // cria um objeto Dado
-                        Dado dado = new Dado(j, message.getPayload());
+        // Cria a mensagem de resposta, que contém o texto recebido por meio deste websock
+            try {
+                for (int j = 0; j < clientes.size(); j++) {
+                    // cria um objeto Dado
+                    Dado dado = new Dado(j, message.getPayload());
 
-                        // converte o objeto Dado para JSON
-                        String conteudo = mapper.writeValueAsString(dado);
+                    // converte o objeto Dado para JSON
+                    String conteudo = mapper.writeValueAsString(dado);
 
-                        // encapsula a string JSON em uma mensagem a ser enviada para o cliente
-                        TextMessage msg = new TextMessage(conteudo);
-                        session.sendMessage(msg);
+                    // encapsula a string JSON em uma mensagem a ser enviada para o cliente
+                    for (var client: clientes.values()){
+                        client.sendMessage(message);
                     }
-                } catch (Exception e) {
-                    return;
                 }
-            });
+            } catch (Exception e) {
+                return;
+            }
     }
 
     @Override
