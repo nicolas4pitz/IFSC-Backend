@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #messages {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 10px;
+            resize: none;
+        }
+        #inputArea {
+            display: flex;
+            gap: 10px;
+        }
+        #inputMessage {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<h2>Cliente WebSocket</h2>
+<textarea id="messages" readonly></textarea>
+<div id="inputArea">
+    <input type="text" id="inputMessage" placeholder="Digite sua mensagem">
+    <button id="sendBtn">Enviar</button>
+</div>
+
+<script>
+    // Abre conexão no mesmo host/origem, endpoint /ws
+    const loc = window.location;
+    const wsProtocol = loc.protocol === "https:" ? "wss:" : "ws:";
+    const wsUrl = `${wsProtocol}//${loc.host}/ws`;
+    const socket = new WebSocket(wsUrl);
+
+    const messagesBox = document.getElementById("messages");
+    const inputMessage = document.getElementById("inputMessage");
+    const sendBtn = document.getElementById("sendBtn");
+
+    // Mensagem recebida do servidor
+    socket.addEventListener("message", event => {
+        messagesBox.value += "Recebido: " + event.data + "\n";
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+    });
+
+    // Enviar mensagem ao clicar
+    sendBtn.addEventListener("click", () => {
+        if (inputMessage.value.trim() !== "") {
+            socket.send(inputMessage.value);
+            messagesBox.value += "Enviado: " + inputMessage.value + "\n";
+            inputMessage.value = "";
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+        }
+    });
+
+    // Permitir enviar com Enter
+    inputMessage.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            sendBtn.click();
+        }
+    });
+</script>
+</body>
+</html>
