@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id("com.github.bjornvester.wsdl2java") version "1.2"
+}
+
+wsdl2java {
+    cxfVersion.set("4.0.2")
+    generatedSourceDir.set(layout.projectDirectory.dir("src/generated/wsdl2java"))
+}
+
+group = 'org.example'
+version = '0.0.1-SNAPSHOT'
+description = 'Stub'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.sun.xml.ws:jaxws-ri:4.0.1'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
