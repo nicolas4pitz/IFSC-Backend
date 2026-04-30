@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.grpc";
+option java_outer_classname = "CalcProto";
+
+service Calc {
+  rpc adiciona (Operandos) returns (Resultado);
+  rpc subtrai (Operandos) returns (Resultado);
+  rpc multiplica (Operandos) returns (Resultado);
+  rpc divide (Operandos) returns (Resultado);
+}
+
+message Operandos {
+  double p1 = 1;
+  double p2 = 2;
+}
+
+message Resultado {
+  double resultado = 1;
+}
