@@ -1,54 +1,80 @@
 # ⚡ Passo a Passo Rápido - OAuth2 Implementado
 
-## 🛠️ Como Foi Feito (10 minutos de leitura)
+## 🛠️ Como Foi Feito
 
 ### 1️⃣ **Adicionadas Dependências** (build.gradle)
 ```gradle
-+ implementation 'org.springframework.boot:spring-boot-starter-security'
-+ implementation 'org.springframework.security:spring-security-oauth2-client'
++ Spring Security
++ OAuth2 Client
 ```
 
 ### 2️⃣ **Criada SecurityConfig.java** (config/)
-- ✅ SecurityFilterChain com autorização de rotas
-- ✅ OAuth2Login handler (redireciona para GitHub)
-- ✅ Logout handler (invalida sessão)
-- ✅ Configuração de sessão JSESSIONID
+- ✅ Autorização de rotas (públicas/privadas)
+- ✅ OAuth2 login com GitHub
+- ✅ Logout (invalida sessão)
 
 ### 3️⃣ **Criada AuthController.java** (controller/)
-- ✅ GET `/api/v1/auth/me` - Retorna usuário autenticado
-- ✅ GET `/api/v1/auth/login-success` - Info debug
-- ✅ POST `/api/v1/auth/logout` - Logout
 
-**Lógica:** Busca/cria usuário no banco com dados do GitHub
+#### **GET `/api/v1/auth/me`**
+- **Recebe:** `Principal` (usuário autenticado do Spring)
+- **Faz:** Extrai dados do GitHub (login, email, avatar) → Busca/cria usuário no banco → Retorna dados
+- **Retorna:** 
+  ```json
+  {
+    "id": 1,
+    "name": "João Silva",
+    "email": "joao@example.com",
+    "githubLogin": "joaosilva",
+    "githubAvatarUrl": "https://...",
+    "role": "USER"
+  }
+  ```
+  Ou erro 401 se não autenticado
 
-### 4️⃣ **Atualizado User.java** (model/)
-```java
-+ String email           // Email do GitHub
-+ String githubLogin     // Username do GitHub
-+ String githubAvatarUrl // Avatar
-+ User.fromGithub()      // Factory method
-- cpf passou a ser opcional (nullable)
-```
+#### **GET `/api/v1/auth/login-success`**
+- **Recebe:** `Principal`
+- **Faz:** Extrai TODOS os atributos do GitHub (para debug)
+- **Retorna:**
+  ```json
+  {
+    "message": "Login realizado com sucesso!",
+    "user": { login, email, name, avatar_url, ... },
+    "authorizedClient": "github"
+  }
+  ```
 
-### 5️⃣ **Atualizado UserRepository.java** (repository/)
-```java
-+ findByEmail(String email)
-+ findByGithubLogin(String login)
-```
-Spring Data JPA gera as queries automaticamente!
+#### **POST `/api/v1/auth/logout`**
+- **Recebe:** Nada
+- **Faz:** SecurityConfig já invalida sessão, apenas retorna confirmação
+- **Retorna:**
+  ```json
+  {
+    "message": "Logout realizado com sucesso",
+    "redirectUrl": "/"
+  }
+  ```
+
+### 4️⃣ **Atualizado User.java**
+- ✅ `email`, `githubLogin`, `githubAvatarUrl` (novos campos)
+- ✅ `cpf` agora é opcional
+- ✅ Método factory `User.fromGithub()`
+
+### 5️⃣ **Atualizado UserRepository.java**
+- ✅ `findByEmail()`
+- ✅ `findByGithubLogin()`
+(Spring Data JPA implementa automaticamente)
 
 ### 6️⃣ **Configurado application.properties**
 ```properties
-+ spring.security.oauth2.client.registration.github.client-id=...
-+ spring.security.oauth2.client.registration.github.client-secret=...
-+ spring.security.oauth2.client.registration.github.scope=user:email
+spring.security.oauth2.client.registration.github.client-id=...
+spring.security.oauth2.client.registration.github.client-secret=...
+spring.security.oauth2.client.registration.github.scope=user:email
 ```
 
-### 7️⃣ **Atualizado index.html** (static/)
-- ✅ Botão "Entrar com GitHub"
-- ✅ Menu com dados do usuário (foto, nome, email)
-- ✅ JavaScript que verifica autenticação via GET /api/v1/auth/me
-- ✅ Mostra/esconde seções baseado no status
+### 7️⃣ **Atualizado index.html**
+- ✅ Botão GitHub
+- ✅ Menu com dados do usuário
+- ✅ JavaScript que checa autenticação
 
 ---
 
@@ -114,3 +140,5 @@ Usuário vê página com seus dados ✅
 | index.html | Reformulado |
 
 ---
+
+**Tudo pronto! 🎉**
